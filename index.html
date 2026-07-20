@@ -1,1 +1,792 @@
-<h1>GSTPE 全產品日報</h1><p>準備中...</p>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>GSTPE 全產品日報 — 2026-07-19</title>
+<style>
+/* =============================================================================
+   AI Operation Hub — 共用 Design Token
+   本次工作環境中找不到既有的 theme.css，以下為起始版本。
+   若專案已有其他工具在用的 theme.css，請以那份為準，覆蓋這個檔案，
+   並確保下方變數名稱對得上，web_report.html.j2 才不用改動。
+   ============================================================================= */
+
+:root {
+  /* --- 品牌色 --- */
+  --color-primary: #4F46E5;
+  --color-primary-dark: #4338CA;
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+
+  /* --- 文字色 --- */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-inverse: #FFFFFF;
+
+  /* --- 狀態色（對應 status: ok / warning / critical） --- */
+  --color-status-ok: #16A34A;
+  --color-status-ok-bg: #DCFCE7;
+  --color-status-warning: #EA580C;
+  --color-status-warning-bg: #FFEDD5;
+  --color-status-critical: #DC2626;
+  --color-status-critical-bg: #FEE2E2;
+
+  /* --- 字體 --- */
+  --font-family-base: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 28px;
+
+  /* --- 間距 --- */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* --- 圓角 / 陰影 --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* -----------------------------------------------------------------------
+   注意：Email 版不能使用這份 CSS 變數（Email 客戶端不支援 CSS variables），
+   email_report.html.j2 需要把上面色碼直接轉成 hex 寫死在 inline style 裡。
+   兩份色碼須手動保持一致，若之後改色，請同步更新兩處。
+   ----------------------------------------------------------------------- */
+
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+.container { max-width: 960px; margin: 0 auto; padding: var(--spacing-lg); }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+}
+.header .title-row { display: flex; align-items: center; gap: var(--spacing-sm); margin: 0 0 var(--spacing-xs) 0; }
+.header .title-row img { height: 40px; width: auto; }
+.header h1 { font-size: var(--font-size-xl); margin: 0; }
+.header .meta { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.actions button {
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  margin-left: var(--spacing-sm);
+}
+.actions button:hover { background: var(--color-bg); }
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+.overview-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-md);
+}
+.overview-card .label { color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.overview-card .value { font-size: var(--font-size-xl); font-weight: 700; margin-top: var(--spacing-xs); }
+
+.game-list {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.game-row, .game-row-header {
+  display: grid;
+  grid-template-columns: 24px 1.4fr 1fr 1fr 0.8fr 1.4fr;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+}
+.game-row { cursor: pointer; }
+.game-row:last-child { border-bottom: none; }
+.game-row:hover { background: var(--color-bg); }
+.game-row-header {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  background: var(--color-bg);
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.ok { background: var(--color-status-ok); }
+.dot.warning { background: var(--color-status-warning); }
+.dot.critical { background: var(--color-status-critical); }
+.dot.unknown, .dot.data_error { background: var(--color-text-secondary); }
+
+.game-name { font-weight: 600; }
+.change-up { color: var(--color-status-ok); }
+.change-down { color: var(--color-status-critical); }
+
+.progress-track {
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  height: 8px;
+  overflow: hidden;
+}
+.progress-fill { height: 100%; border-radius: var(--radius-sm); }
+.progress-fill.ok { background: var(--color-status-ok); }
+.progress-fill.warning { background: var(--color-status-warning); }
+.progress-fill.critical { background: var(--color-status-critical); }
+.progress-label { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 2px; }
+
+.game-detail {
+  display: none;
+  padding: 0 var(--spacing-md) var(--spacing-lg) var(--spacing-md);
+  background: var(--color-bg);
+}
+.game-detail.open { display: block; }
+
+.insight-box {
+  background: var(--color-surface);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+.insight-box.empty { color: var(--color-text-secondary); font-style: italic; }
+
+.metric-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+.metric-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: center;
+}
+.metric-card .label { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.metric-card .value { font-size: var(--font-size-lg); font-weight: 700; margin-top: 2px; }
+
+.trend-chart { background: var(--color-surface); border-radius: var(--radius-sm); padding: var(--spacing-md); }
+.trend-chart .title { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--spacing-sm); }
+.bars { display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.bar { width: 60%; background: var(--color-primary); border-radius: 3px 3px 0 0; min-height: 2px; }
+.bar-date { font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 4px; }
+
+.error-note { color: var(--color-status-critical); font-size: var(--font-size-sm); padding: var(--spacing-md); }
+
+@media print {
+  .actions { display: none !important; }
+  body { background: #fff; }
+  .game-detail { display: block !important; }
+  .game-row { cursor: default; }
+  .overview { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <div class="title-row">
+        <img src="data:image/png;base64,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" alt="VNG">
+        <h1>GSTPE 全產品日報</h1>
+      </div>
+      <div class="meta">資料日期：2026-07-19　生成時間：2026-07-20T18:58:29.465649+08:00</div>
+    </div>
+    <div class="actions">
+      <button onclick="window.print()">下載 PDF</button>
+      <button onclick="copySummary()">複製摘要</button>
+    </div>
+  </div>
+
+  <div class="overview">
+    <div class="overview-card">
+      <div class="label">全產品總營收</div>
+      <div class="value">$6,662</div>
+    </div>
+    <div class="overview-card">
+      <div class="label">全產品總 DAU</div>
+      <div class="value">3,706</div>
+    </div>
+    <div class="overview-card">
+      <div class="label">需留意產品數量</div>
+      <div class="value">0 / 5</div>
+    </div>
+  </div>
+
+  <div class="game-list">
+    <div class="game-row-header">
+      <div></div>
+      <div>產品</div>
+      <div>營收</div>
+      <div>DAU</div>
+      <div>較昨日</div>
+      <div>Revenue 達成率</div>
+    </div>
+    
+    <div class="game-row" onclick="toggleDetail('gno_twhkmo')">
+      <div class="dot unknown"></div>
+      <div class="game-name">GNO-TWHKMO（彈彈堂）</div>
+
+      
+        <div>$1,469</div>
+        <div>1,297</div>
+        <div class="change-up">
+          
+            +20.4%
+          
+        </div>
+        <div>
+          
+          
+            <div class="progress-label">目標未設定</div>
+          
+        </div>
+      
+    </div>
+
+    <div class="game-detail" id="detail-gno_twhkmo">
+      
+        <div class="insight-box empty">
+          （今日重點尚未填寫）
+        </div>
+
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="label">ARPU</div>
+            <div class="value">$1.13</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">ARPPU</div>
+            <div class="value">$28.24</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Pay Rate</div>
+            <div class="value">4.00%</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">NRU 達成率</div>
+            <div class="value">
+              
+              目標未設定
+            </div>
+          </div>
+        </div>
+
+        <div class="trend-chart">
+          <div class="title">近 7 日營收趨勢</div>
+          
+          <div class="bars">
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 59.42223436219612%;"
+                   title="7/13: $2,719"></div>
+              <div class="bar-date">7/13</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 73.86987161977602%;"
+                   title="7/14: $3,380"></div>
+              <div class="bar-date">7/14</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 100.0%;"
+                   title="7/15: $4,576"></div>
+              <div class="bar-date">7/15</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 31.645998361103523%;"
+                   title="7/16: $1,448"></div>
+              <div class="bar-date">7/16</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 26.053428025129744%;"
+                   title="7/17: $1,192"></div>
+              <div class="bar-date">7/17</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 26.647801147227533%;"
+                   title="7/18: $1,219"></div>
+              <div class="bar-date">7/18</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 32.089811526905216%;"
+                   title="7/19: $1,469"></div>
+              <div class="bar-date">7/19</div>
+            </div>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+    <div class="game-row" onclick="toggleDetail('gno_sgmy')">
+      <div class="dot unknown"></div>
+      <div class="game-name">GNO-SGMY（彈彈堂）</div>
+
+      
+        <div>$670</div>
+        <div>1,046</div>
+        <div class="change-down">
+          
+            -34.7%
+          
+        </div>
+        <div>
+          
+          
+            <div class="progress-label">目標未設定</div>
+          
+        </div>
+      
+    </div>
+
+    <div class="game-detail" id="detail-gno_sgmy">
+      
+        <div class="insight-box empty">
+          （今日重點尚未填寫）
+        </div>
+
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="label">ARPU</div>
+            <div class="value">$0.64</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">ARPPU</div>
+            <div class="value">$15.58</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Pay Rate</div>
+            <div class="value">4.00%</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">NRU 達成率</div>
+            <div class="value">
+              
+              目標未設定
+            </div>
+          </div>
+        </div>
+
+        <div class="trend-chart">
+          <div class="title">近 7 日營收趨勢</div>
+          
+          <div class="bars">
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 64.32517803163246%;"
+                   title="7/13: $1,136"></div>
+              <div class="bar-date">7/13</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 100.0%;"
+                   title="7/14: $1,767"></div>
+              <div class="bar-date">7/14</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 95.51892399832441%;"
+                   title="7/15: $1,687"></div>
+              <div class="bar-date">7/15</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 92.44342047165645%;"
+                   title="7/16: $1,633"></div>
+              <div class="bar-date">7/16</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 69.69103445152672%;"
+                   title="7/17: $1,231"></div>
+              <div class="bar-date">7/17</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 58.09548609145562%;"
+                   title="7/18: $1,026"></div>
+              <div class="bar-date">7/18</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 37.91762428249573%;"
+                   title="7/19: $670"></div>
+              <div class="bar-date">7/19</div>
+            </div>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+    <div class="game-row" onclick="toggleDetail('csb')">
+      <div class="dot unknown"></div>
+      <div class="game-name">CSB（天上碑）</div>
+
+      
+        <div>$1,499</div>
+        <div>1,363</div>
+        <div class="change-down">
+          
+            -31.4%
+          
+        </div>
+        <div>
+          
+          
+            <div class="progress-label">目標未設定</div>
+          
+        </div>
+      
+    </div>
+
+    <div class="game-detail" id="detail-csb">
+      
+        <div class="insight-box ">
+          主要為同伴超越禮包、召喚禮包與裝備素質禮包，三方占比約為34.4%。營收不如預期主要是三方占比雖佔營收約1/3，但整體購買量仍低於預期，未能驅動大課玩家付費。
+        </div>
+
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="label">ARPU</div>
+            <div class="value">$1.10</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">ARPPU</div>
+            <div class="value">$51.70</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Pay Rate</div>
+            <div class="value">2.00%</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">NRU 達成率</div>
+            <div class="value">
+              
+              目標未設定
+            </div>
+          </div>
+        </div>
+
+        <div class="trend-chart">
+          <div class="title">近 7 日營收趨勢</div>
+          
+          <div class="bars">
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 100.0%;"
+                   title="7/13: $11,780"></div>
+              <div class="bar-date">7/13</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 4.529317686367988%;"
+                   title="7/14: $534"></div>
+              <div class="bar-date">7/14</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 40.976594068550554%;"
+                   title="7/15: $4,827"></div>
+              <div class="bar-date">7/15</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 19.332728914967166%;"
+                   title="7/16: $2,277"></div>
+              <div class="bar-date">7/16</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 22.830290867849694%;"
+                   title="7/17: $2,689"></div>
+              <div class="bar-date">7/17</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 18.54265563772929%;"
+                   title="7/18: $2,184"></div>
+              <div class="bar-date">7/18</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 12.727845350392872%;"
+                   title="7/19: $1,499"></div>
+              <div class="bar-date">7/19</div>
+            </div>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+    <div class="game-row" onclick="toggleDetail('ms_twhkmo')">
+      <div class="dot unknown"></div>
+      <div class="game-name">MS-TWHKMO（合金彈頭）</div>
+
+      
+        <div>$1,687</div>
+        <div>0</div>
+        <div class="change-down">
+          
+            -18.3%
+          
+        </div>
+        <div>
+          
+          
+            <div class="progress-label">目標未設定</div>
+          
+        </div>
+      
+    </div>
+
+    <div class="game-detail" id="detail-ms_twhkmo">
+      
+        <div class="insight-box empty">
+          （今日重點尚未填寫）
+        </div>
+
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="label">ARPU</div>
+            <div class="value">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">ARPPU</div>
+            <div class="value">$25.95</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Pay Rate</div>
+            <div class="value">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">NRU 達成率</div>
+            <div class="value">
+              
+              目標未設定
+            </div>
+          </div>
+        </div>
+
+        <div class="trend-chart">
+          <div class="title">近 7 日營收趨勢</div>
+          
+          <div class="bars">
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 18.843722338324874%;"
+                   title="7/13: $720"></div>
+              <div class="bar-date">7/13</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 18.22933852914526%;"
+                   title="7/14: $696"></div>
+              <div class="bar-date">7/14</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 52.042184545602154%;"
+                   title="7/15: $1,987"></div>
+              <div class="bar-date">7/15</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 100.0%;"
+                   title="7/16: $3,818"></div>
+              <div class="bar-date">7/16</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 45.174756315373216%;"
+                   title="7/17: $1,725"></div>
+              <div class="bar-date">7/17</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 54.032777611916835%;"
+                   title="7/18: $2,063"></div>
+              <div class="bar-date">7/18</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 44.167282098018575%;"
+                   title="7/19: $1,687"></div>
+              <div class="bar-date">7/19</div>
+            </div>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+    <div class="game-row" onclick="toggleDetail('ms_sgmy')">
+      <div class="dot unknown"></div>
+      <div class="game-name">MS-SGMY（合金彈頭）</div>
+
+      
+        <div>$1,338</div>
+        <div>0</div>
+        <div class="change-up">
+          
+            +308.6%
+          
+        </div>
+        <div>
+          
+          
+            <div class="progress-label">目標未設定</div>
+          
+        </div>
+      
+    </div>
+
+    <div class="game-detail" id="detail-ms_sgmy">
+      
+        <div class="insight-box empty">
+          （今日重點尚未填寫）
+        </div>
+
+        <div class="metric-cards">
+          <div class="metric-card">
+            <div class="label">ARPU</div>
+            <div class="value">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">ARPPU</div>
+            <div class="value">$33.46</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Pay Rate</div>
+            <div class="value">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">NRU 達成率</div>
+            <div class="value">
+              
+              目標未設定
+            </div>
+          </div>
+        </div>
+
+        <div class="trend-chart">
+          <div class="title">近 7 日營收趨勢</div>
+          
+          <div class="bars">
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 37.05940252965205%;"
+                   title="7/13: $753"></div>
+              <div class="bar-date">7/13</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 28.416260642748163%;"
+                   title="7/14: $577"></div>
+              <div class="bar-date">7/14</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 100.0%;"
+                   title="7/15: $2,032"></div>
+              <div class="bar-date">7/15</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 95.03469658939908%;"
+                   title="7/16: $1,931"></div>
+              <div class="bar-date">7/16</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 22.771789950292828%;"
+                   title="7/17: $463"></div>
+              <div class="bar-date">7/17</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 16.117919188936465%;"
+                   title="7/18: $328"></div>
+              <div class="bar-date">7/18</div>
+            </div>
+            
+            <div class="bar-col">
+              <div class="bar" style="height: 65.8624932329347%;"
+                   title="7/19: $1,338"></div>
+              <div class="bar-date">7/19</div>
+            </div>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  </div>
+
+  <p style="margin-top: var(--spacing-lg); color: var(--color-text-secondary); font-size: var(--font-size-xs);">
+    本階段「今日重點」為人工填寫欄位，AI 自動歸因將於下一階段接入。
+  </p>
+</div>
+
+<script>
+function toggleDetail(gameId) {
+  const el = document.getElementById('detail-' + gameId);
+  if (!el) return;
+  el.classList.toggle('open');
+}
+
+function copySummary() {
+  const games = [{"achievement": {"nru_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "cumulative_total": {"arppu": 413.7, "arpu": 57.52, "npu": 45452, "nru": 326914, "pay_rate": 0.14, "revenue": 18803334.19}, "daily": {"arppu": 28.24, "arpu": 1.13, "dau": 1297, "npu": 8, "nru": 41, "pay_rate": 0.04, "pu": 52, "revenue": 1468.51}, "game_id": "gno_twhkmo", "game_name": "GNO-TWHKMO\uff08\u5f48\u5f48\u5802\uff09", "insight_text": "", "kpi_targets": {"nru_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "monthly": {"ach_rate": 0.387, "arppu": 121.82, "arpu": 20.18, "kpi_target": 175000.0, "mau": 3357, "mpu": 556, "pay_rate": 0.17, "revenue": 67731.13}, "revenue_change_vs_yesterday": 20.42, "status": "unknown", "trend_7d": [{"date": "7/13", "revenue": 2719.31}, {"date": "7/14", "revenue": 3380.47}, {"date": "7/15", "revenue": 4576.25}, {"date": "7/16", "revenue": 1448.2}, {"date": "7/17", "revenue": 1192.27}, {"date": "7/18", "revenue": 1219.47}, {"date": "7/19", "revenue": 1468.51}]}, {"achievement": {"nru_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "cumulative_total": {"arppu": 304.47, "arpu": 47.54, "npu": 18765, "nru": 120167, "pay_rate": 0.16, "revenue": 5713302.31}, "daily": {"arppu": 15.58, "arpu": 0.64, "dau": 1046, "npu": 4, "nru": 48, "pay_rate": 0.04, "pu": 43, "revenue": 669.83}, "game_id": "gno_sgmy", "game_name": "GNO-SGMY\uff08\u5f48\u5f48\u5802\uff09", "insight_text": "", "kpi_targets": {"nru_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "monthly": {"ach_rate": 0.3353, "arppu": 94.13, "arpu": 13.83, "kpi_target": 105000.0, "mau": 2545, "mpu": 374, "pay_rate": 0.15, "revenue": 35203.21}, "revenue_change_vs_yesterday": -34.73, "status": "unknown", "trend_7d": [{"date": "7/13", "revenue": 1136.33}, {"date": "7/14", "revenue": 1766.54}, {"date": "7/15", "revenue": 1687.38}, {"date": "7/16", "revenue": 1633.05}, {"date": "7/17", "revenue": 1231.12}, {"date": "7/18", "revenue": 1026.28}, {"date": "7/19", "revenue": 669.83}]}, {"achievement": {"nru_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "cumulative_total": {"arppu": 1239.45, "arpu": 57.38, "npu": 8680, "nru": 187497, "pay_rate": 0.05, "revenue": 10758392.59}, "daily": {"arppu": 51.7, "arpu": 1.1, "dau": 1363, "npu": 29, "nru": 4, "pay_rate": 0.02, "pu": 29, "revenue": 1499.33}, "game_id": "csb", "game_name": "CSB\uff08\u5929\u4e0a\u7891\uff09", "insight_text": "\u4e3b\u8981\u70ba\u540c\u4f34\u8d85\u8d8a\u79ae\u5305\u3001\u53ec\u559a\u79ae\u5305\u8207\u88dd\u5099\u7d20\u8cea\u79ae\u5305\uff0c\u4e09\u65b9\u5360\u6bd4\u7d04\u70ba34.4%\u3002\u71df\u6536\u4e0d\u5982\u9810\u671f\u4e3b\u8981\u662f\u4e09\u65b9\u5360\u6bd4\u96d6\u4f54\u71df\u6536\u7d041/3\uff0c\u4f46\u6574\u9ad4\u8cfc\u8cb7\u91cf\u4ecd\u4f4e\u65bc\u9810\u671f\uff0c\u672a\u80fd\u9a45\u52d5\u5927\u8ab2\u73a9\u5bb6\u4ed8\u8cbb\u3002", "kpi_targets": {"nru_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "monthly": {"ach_rate": 0.6258, "arppu": 269.15, "arpu": 38.13, "kpi_target": 126005.0, "mau": 2068, "mpu": 293, "pay_rate": 0.14, "revenue": 78860.04}, "revenue_change_vs_yesterday": -31.36, "status": "unknown", "trend_7d": [{"date": "7/13", "revenue": 11779.92}, {"date": "7/14", "revenue": 533.55}, {"date": "7/15", "revenue": 4827.01}, {"date": "7/16", "revenue": 2277.38}, {"date": "7/17", "revenue": 2689.39}, {"date": "7/18", "revenue": 2184.31}, {"date": "7/19", "revenue": 1499.33}]}, {"achievement": {"nru_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "cumulative_total": {"arppu": 332.36, "arpu": 40.97, "npu": 58626, "nru": 475603, "pay_rate": 0.12, "revenue": 19485218.54}, "daily": {"arppu": 25.95, "arpu": null, "dau": 0, "npu": 65, "nru": 12, "pay_rate": null, "pu": 65, "revenue": 1686.51}, "game_id": "ms_twhkmo", "game_name": "MS-TWHKMO\uff08\u5408\u91d1\u5f48\u982d\uff09", "insight_text": "", "kpi_targets": {"nru_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "monthly": {"ach_rate": 0.7984, "arppu": 126.0, "arpu": 27.19, "kpi_target": 59500.0, "mau": 1747, "mpu": 377, "pay_rate": 0.22, "revenue": 47503.79}, "revenue_change_vs_yesterday": -18.26, "status": "unknown", "trend_7d": [{"date": "7/13", "revenue": 719.54}, {"date": "7/14", "revenue": 696.08}, {"date": "7/15", "revenue": 1987.21}, {"date": "7/16", "revenue": 3818.46}, {"date": "7/17", "revenue": 1724.98}, {"date": "7/18", "revenue": 2063.22}, {"date": "7/19", "revenue": 1686.51}]}, {"achievement": {"nru_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_ach_rate": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "cumulative_total": {"arppu": 179.54, "arpu": 13.9, "npu": 44907, "nru": 580097, "pay_rate": 0.08, "revenue": 8062799.23}, "daily": {"arppu": 33.46, "arpu": null, "dau": 0, "npu": 40, "nru": 28, "pay_rate": null, "pu": 40, "revenue": 1338.26}, "game_id": "ms_sgmy", "game_name": "MS-SGMY\uff08\u5408\u91d1\u5f48\u982d\uff09", "insight_text": "", "kpi_targets": {"nru_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a", "revenue_target": "\u76ee\u6a19\u672a\u8a2d\u5b9a"}, "monthly": {"ach_rate": 0.8282, "arppu": 86.86, "arpu": 12.59, "kpi_target": 30100.0, "mau": 1980, "mpu": 287, "pay_rate": 0.14, "revenue": 24930.24}, "revenue_change_vs_yesterday": 308.63, "status": "unknown", "trend_7d": [{"date": "7/13", "revenue": 753.01}, {"date": "7/14", "revenue": 577.39}, {"date": "7/15", "revenue": 2031.9}, {"date": "7/16", "revenue": 1931.01}, {"date": "7/17", "revenue": 462.7}, {"date": "7/18", "revenue": 327.5}, {"date": "7/19", "revenue": 1338.26}]}];
+  let lines = ["GSTPE 全產品日報 — 2026-07-19", ""];
+  games.forEach(function (g) {
+    if (g.status === 'data_error') {
+      lines.push(g.game_name + "：資料抓取失敗");
+      return;
+    }
+    const rev = g.daily.revenue != null ? '$' + g.daily.revenue.toLocaleString() : '—';
+    const dau = g.daily.dau != null ? g.daily.dau.toLocaleString() : '—';
+    const ach = (typeof g.achievement.revenue_ach_rate === 'number')
+      ? (g.achievement.revenue_ach_rate * 100).toFixed(1) + '%'
+      : g.achievement.revenue_ach_rate;
+    lines.push(g.game_name + "：營收 " + rev + "，DAU " + dau + "，Revenue 達成率 " + ach);
+    if (g.insight_text) lines.push("　" + g.insight_text);
+  });
+  const text = lines.join("\n");
+  navigator.clipboard.writeText(text).then(function () {
+    alert("已複製摘要到剪貼簿");
+  });
+}
+</script>
+</body>
+</html>
