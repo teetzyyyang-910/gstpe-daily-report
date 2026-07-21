@@ -141,6 +141,23 @@ table.vip-table tr.no-login td.login-cell { color: var(--color-status-warning); 
 .no-record-label { font-weight: 600; }
 .sub-line { display: block; font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-top: 2px; }
 
+.diagnosis-block { margin-top: var(--spacing-md); }
+.diagnosis-block h3 {
+  font-size: var(--font-size-md);
+  margin: 0 0 var(--spacing-xs) 0;
+  display: flex; align-items: baseline; gap: var(--spacing-sm);
+}
+.diagnosis-block h3 .sub { font-size: var(--font-size-xs); color: var(--color-text-secondary); font-weight: 400; }
+.plateau-tag {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--color-status-warning-bg);
+  color: var(--color-status-warning);
+  margin-left: 4px;
+}
+
 .footer-note {
   margin-top: var(--spacing-lg);
   color: var(--color-text-secondary);
@@ -157,7 +174,7 @@ table.vip-table tr.no-login td.login-cell { color: var(--color-status-warning); 
         <img src="data:image/png;base64,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" alt="VNG">
         <h1>VIP 監控 v0（實驗版）</h1>
       </div>
-      <div class="meta">資料日期：2026-07-21　生成時間：2026-07-21 11:15</div>
+      <div class="meta">資料日期：2026-07-21　生成時間：2026-07-21 11:33</div>
     </div>
   </div>
 
@@ -183,7 +200,7 @@ table.vip-table tr.no-login td.login-cell { color: var(--color-status-warning); 
 
   
   <div class="game-section" id="section-gno_twhkmo">
-    <h2>GNO-TWHKMO（彈彈堂） <span class="sub">共 318 位 VIP，其中 25 位查無付費紀錄</span></h2>
+    <h2>GNO-TWHKMO（彈彈堂） <span class="sub">共 317 位 VIP，其中 25 位查無付費紀錄</span></h2>
     <div class="table-scroll">
     <table class="vip-table">
       <thead>
@@ -1137,53 +1154,6 @@ table.vip-table tr.no-login td.login-cell { color: var(--color-status-warning); 
             981,519,304
             /
             901,634,584
-          </td>
-        </tr>
-        
-        <tr class=" ">
-          <td>2265712933723979776</td>
-          <td>13</td>
-          <td>
-            台灣 / S13
-            <span class="sub-line">非洲5号</span>
-          </td>
-          <td>
-            
-              <span class="days-badge">7</span> 天
-              <span class="sub-line">2026-07-14</span>
-            
-          </td>
-          <td>
-            
-              
-                244,259 VND
-                <span class="sub-line">
-                  原始：38.00 MYR
-                  ・品項ID：com.vng.ddtanktwmy.wp4
-                </span>
-              
-            
-          </td>
-          <td class="login-cell">
-            
-              <span class="days-badge">1</span> 天
-            
-          </td>
-          <td class="login-cell">
-            
-              2026-07-20
-              
-                <span class="sub-line" title="playing_time單位待驗證，暫以秒計算">
-                  上次上線約 2 小時
-                  0 分鐘
-                </span>
-              
-            
-          </td>
-          <td>
-            501,545,836
-            /
-            533,405,784
           </td>
         </tr>
         
@@ -15112,6 +15082,876 @@ table.vip-table tr.no-login td.login-cell { color: var(--color-status-warning); 
       </tbody>
     </table>
     </div>
+
+    
+    <div class="diagnosis-block">
+      <h3>不付費VIP消耗/強化診斷（項目5，實驗版）
+        <span class="sub">共 25 位查無付費紀錄，橘色標籤代表等級/戰力停在歷史最高值，可能已無成長空間</span>
+      </h3>
+      <div class="table-scroll">
+      <table class="vip-table">
+        <thead>
+          <tr>
+            <th>帳號ID</th>
+            <th>VIP等級</th>
+            <th>距上次強化天數 / 品項</th>
+            <th>距上次課金消費天數 / 品項</th>
+            <th>目前貨幣餘額</th>
+            <th>角色等級 目前/最高</th>
+            <th>戰力 目前/最高</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>2489020996411998208</td>
+            <td>15</td>
+            <td>
+              
+                <span class="days-badge">1</span> 天
+                <span class="sub-line">真·瘋狂小雞</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1</span> 天
+                <span class="sub-line">t_s_productid_ProductName_10</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：25,218<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2226062374318653440</td>
+            <td>14</td>
+            <td>
+              
+                <span class="days-badge">713</span> 天
+                <span class="sub-line">月圆之盾</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">776</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：0<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2403090250548142080</td>
+            <td>14</td>
+            <td>
+              
+                <span class="days-badge">11</span> 天
+                <span class="sub-line">真·天使之赐</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">260</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：932<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2225111657277841408</td>
+            <td>14</td>
+            <td>
+              
+                <span class="days-badge">68</span> 天
+                <span class="sub-line">真·冰雪神杖</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">819</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：10,028<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2226040411047092224</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">745</span> 天
+                <span class="sub-line">真·珍奶</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">731</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：0<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224050325946392576</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">234</span> 天
+                <span class="sub-line">真·如意彩燈</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">254</span> 天
+                <span class="sub-line">t_s_productid_ProductName_8</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：513<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2371061139374104576</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">805</span> 天
+                <span class="sub-line">真·村正</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">884</span> 天
+                <span class="sub-line">t_s_productid_ProductName_3</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：101<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2693073021163298816</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1</span> 天
+                <span class="sub-line">沉稳之固</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1</span> 天
+                <span class="sub-line">t_s_productid_ProductName_9</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：4,568<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224041093108883456</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">14</span> 天
+                <span class="sub-line">翔·天使之賜</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">329</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：157<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224041154228281344</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">81</span> 天
+                <span class="sub-line">海浪沖擊</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">138</span> 天
+                <span class="sub-line">t_s_productid_ProductName_6</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：0<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2290070693877932032</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">520</span> 天
+                <span class="sub-line">在水一方·帽</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">810</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：111<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224051249372749824</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">726</span> 天
+                <span class="sub-line">真·珍奶</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1179</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：5<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2.22427e+18</td>
+            <td>13</td>
+            <td>
+              
+                <span class="no-record-label">查無資料</span>
+              
+            </td>
+            <td>
+              
+                <span class="no-record-label">查無資料</span>
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2231022239747162112</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1243</span> 天
+                <span class="sub-line">真·珍奶</span>
+              
+            </td>
+            <td>
+              
+                <span class="no-record-label">查無資料</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：39<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224061585245093888</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">996</span> 天
+                <span class="sub-line">木劍</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1088</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：86<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2225122846246453248</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">5</span> 天
+                <span class="sub-line">惡魔之吻</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">153</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：283<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2228111172796694528</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1</span> 天
+                <span class="sub-line">真·伯爵之劍</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">260</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：1,686<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224072918363561984</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">12</span> 天
+                <span class="sub-line">真·春秋扇</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">866</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：3<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2201111166000840704</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1096</span> 天
+                <span class="sub-line">真·天使之賜</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1164</span> 天
+                <span class="sub-line">t_s_productid_ProductName_5</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：10<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2225112762099458048</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1228</span> 天
+                <span class="sub-line">真·AK-48</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1252</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：344<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224042305212407808</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1204</span> 天
+                <span class="sub-line">極·魔力水槍</span>
+              
+            </td>
+            <td>
+              
+                <span class="no-record-label">查無資料</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：2<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2226101255332184064</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1023</span> 天
+                <span class="sub-line">真·財源滾滾</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">1191</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：149<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2224072064940138496</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">128</span> 天
+                <span class="sub-line">霖花精灵</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">270</span> 天
+                <span class="sub-line">t_s_productid_ProductName_1</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：6<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2225121717240487936</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">32</span> 天
+                <span class="sub-line">真·村正</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">153</span> 天
+                <span class="sub-line">t_s_productid_ProductName_6</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：0<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2225122833328005120</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">649</span> 天
+                <span class="sub-line">馬賽克墨鏡</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">649</span> 天
+                <span class="sub-line">t_s_productid_ProductName_2</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：8<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+      </div>
+    </div>
+    
   </div>
   
   <div class="game-section" id="section-gno_sgmy">
@@ -18893,12 +19733,109 @@ table.vip-table tr.no-login td.login-cell { color: var(--color-status-warning); 
       </tbody>
     </table>
     </div>
+
+    
+    <div class="diagnosis-block">
+      <h3>不付費VIP消耗/強化診斷（項目5，實驗版）
+        <span class="sub">共 2 位查無付費紀錄，橘色標籤代表等級/戰力停在歷史最高值，可能已無成長空間</span>
+      </h3>
+      <div class="table-scroll">
+      <table class="vip-table">
+        <thead>
+          <tr>
+            <th>帳號ID</th>
+            <th>VIP等級</th>
+            <th>距上次強化天數 / 品項</th>
+            <th>距上次課金消費天數 / 品項</th>
+            <th>目前貨幣餘額</th>
+            <th>角色等級 目前/最高</th>
+            <th>戰力 目前/最高</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td>3016092768945586176</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">110</span> 天
+                <span class="sub-line">金兔寶冠</span>
+              
+            </td>
+            <td>
+              
+                <span class="days-badge">139</span> 天
+                <span class="sub-line">t_s_productid_ProductName_2</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：36<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+          <tr>
+            <td>2269052547863953408</td>
+            <td>13</td>
+            <td>
+              
+                <span class="days-badge">1275</span> 天
+                <span class="sub-line">真·天使之賜</span>
+              
+            </td>
+            <td>
+              
+                <span class="no-record-label">查無資料</span>
+              
+            </td>
+            <td>
+              
+                
+                  未知幣別：1<br>
+                
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+            <td>
+              
+                —
+              
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+      </div>
+    </div>
+    
   </div>
   
 
   <p class="footer-note">
     v0 實驗版：資料來源為人工維護的 VIP 名冊（Google Sheet vip_list 分頁）＋ Metabase 查詢的
-    std_ingame_user_recharge_daily。目前僅 GNO（TWHKMO / SGMY）有名單可監控。
+    std_ingame_user_recharge_daily / etl_ingame_login_logout / etl_ingame_recharge /
+    etl_ingame_enhance / etl_ingame_chick_coin_spend / etl_ingame_money / mf_ingame_roles。
+    目前僅 GNO（TWHKMO / SGMY）有名單可監控。「不付費VIP消耗/強化診斷」區塊用到的四張表
+    （強化、課金貨幣消費、貨幣餘額、角色現況）尚未實際跑資料驗證帳號欄位值域，如果整批
+    查無資料，優先檢查是不是帳號格式（前綴）對不起來。
   </p>
 </div>
 
